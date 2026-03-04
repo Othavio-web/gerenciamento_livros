@@ -116,3 +116,73 @@ function atualizarProgressoGeral() {
   barra.style.width = porcentagem + "%";
   textoProgresso.textContent = `Progresso geral: ${paginasLidas} de ${totalPaginas} páginas (${porcentagem.toFixed(1)}%)`;
 }
+
+function adicionarLivroNaLista(Livro){
+  const li = document.createElement("li");
+
+  //texto principal
+  const info = document.createElement("div");
+  info.innerHTML=`
+  <strong>${livro.titulo}</strong> - ${livro.autor}
+  <br>Páginas:${livro.paginasLidas}/${livro.paginas}
+  <br>Progresso:${((livro.paginasLidas/livro.paginas)*100).toFixed(1)}%
+  <br>Status:${livro.status || "em andamento"}
+  `
+  li.appendChild(info);
+
+  //mini barra de prograsso
+  const barraContainer = document.createElement("div");
+  barraContainer.className = "barra-conteiner-livro";
+
+  const barraLivro = document.createElement("div");
+  barraLivro.className = "barra-livro "+(livro.staus === "lido"?"lido":"andamento");
+  barraLivro.style.width = ((livro.paginasLidas/livro.paginas)*100)+"%";
+
+  barraContainer.appendChild(barraLivro);
+  li.appendChild(barraContainer);
+
+  // Campo para atualizar páginas lidas
+  const inputLidas = documento.appendChild("input");
+  inputLidas.type = "number";
+  inputLidas.min = 0;
+  inputLidas.max = livro.paginas;
+  inputLidas.value = livro.paginasLidas;
+  inputLidas.onchange = ()=>atualizarProgressoLivro(livro, parseInt(inputLidas.value));
+
+  li.appendChild(inputLidas);
+
+  //Botão "Marcar como Lido"
+  const btnLido = document.createElement("button");
+  btnLido.textContent = "Marcar como Lido";
+  btnLido.onclick = ()=> atualizarStatus(livro, "lido");
+  li.appendChild(btnLido);
+
+  //Botão "Em andamento"
+  const btnAndamento = document.createElement("button");
+  btnLido.textContent = "em andamento";
+  btnLido.onclick = ()=> atualizarStatus(livro, "em andamento");
+  li.appendChild(btnAndamento);
+  
+  //Botão remover com confirmação
+  const btnRemover = document.createElement("button");
+  btnLido.textContent = "Remover";
+  btnLido.onclick = ()=> removerLivro(livro);
+  li.appendChild(btnRemover);
+
+  lista.appendChild(li);
+}
+
+function atualizarStatus(livro, novoStatus){
+  let livros = JSON.parse(localStorage.getItem("livros")) || []
+  livros = livros.map(l=>{
+    if(l,titulo ===livros.titulo && l.autor === livro.autor){
+      l.status = novoStatus;
+    }
+    return l;
+  });
+  localStorage.setItem("livros", JSON.stringify(livros));
+  
+  lista.innerHTML = "";
+  livros.forEach(adicionarLivroNaLista);
+  atualizarProgressoGeral();
+}

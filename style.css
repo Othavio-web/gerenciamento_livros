@@ -89,3 +89,13 @@ li {
   border-radius: 5px;
   transition: width 0.3s ease;
 }
+
+/*Cores para status*/
+.barra-livro.andamento{
+  background-color: #4a90e2;/*Azul */
+}
+
+
+.barra-livro.lido{
+  background-color: #2ecc71;/*verde */
+}
