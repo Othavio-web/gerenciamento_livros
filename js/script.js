@@ -21,64 +21,30 @@ form.addEventListener("submit", function(event) {
   atualizarProgressoGeral();
 });
 
-function adicionarLivroNaLista(livro) {
-  const li = document.createElement("li");
-
-  // Texto principal
-  const info = document.createElement("div");
-  info.innerHTML = `
-    <strong>${livro.titulo}</strong> - ${livro.autor}  
-    <br>Páginas: ${livro.lidas}/${livro.paginas}  
-    <br>Progresso: ${((livro.lidas / livro.paginas) * 100).toFixed(1)}%
-  `;
-  li.appendChild(info);
-
-  // Mini barra de progresso individual
-  const barraContainer = document.createElement("div");
-  barraContainer.className = "barra-container-livro";
-
-  const barraLivro = document.createElement("div");
-  barraLivro.className = "barra-livro";
-  barraLivro.style.width = ((livro.lidas / livro.paginas) * 100) + "%";
-
-  barraContainer.appendChild(barraLivro);
-  li.appendChild(barraContainer);
-
-  // Campo para atualizar páginas lidas
-  const inputLidas = document.createElement("input");
-  inputLidas.type = "number";
-  inputLidas.min = 0;
-  inputLidas.max = livro.paginas;
-  inputLidas.value = livro.lidas;
-  inputLidas.onchange = () => atualizarProgressoLivro(livro, parseInt(inputLidas.value));
-
-  li.appendChild(inputLidas);
-
-  // Botão remover com confirmação
-  const btnRemover = document.createElement("button");
-  btnRemover.textContent = "Remover";
-  btnRemover.onclick = () => removerLivro(livro);
-
-  li.appendChild(btnRemover);
-
-  lista.appendChild(li);
-}
-
 function salvarLivro(livro) {
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscarLivros();
   livros.push(livro);
-  localStorage.setItem("livros", JSON.stringify(livros));
+  try{
+    localStorage.setItem("livros", JSON.stringify(livros));
+  }catch(erro){
+    console.error();
+  }
+  
 }
 
 function carregarLivros() {
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = JbuscarLivros();
   lista.innerHTML = "";
   livros.forEach(adicionarLivroNaLista);
   atualizarProgressoGeral();
 }
 
 function atualizarProgressoLivro(livro, novasPaginasLidas) {
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscarLivros();
+  if(novasPaginasLidas<0){
+    alert("número de paginas negativo, verifique");
+    return;
+  }
   livros = livros.map(l => {
     if (l.titulo === livro.titulo && l.autor === livro.autor) {
       l.lidas = novasPaginasLidas;
@@ -96,7 +62,7 @@ function removerLivro(livro) {
   const confirmar = confirm(`Tem certeza que deseja remover "${livro.titulo}" de ${livro.autor}?`);
   if (!confirmar) return;
 
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscarLivros();
   livros = livros.filter(l => !(l.titulo === livro.titulo && l.autor === livro.autor));
   localStorage.setItem("livros", JSON.stringify(livros));
 
@@ -106,7 +72,7 @@ function removerLivro(livro) {
 }
 
 function atualizarProgressoGeral() {
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscarLivros();
 
   let totalPaginas = livros.reduce((acc, l) => acc + l.paginas, 0);
   let paginasLidas = livros.reduce((acc, l) => acc + l.lidas, 0);
@@ -124,11 +90,11 @@ function adicionarLivroNaLista(Livro){
   const info = document.createElement("div");
   info.innerHTML=`
   <strong>${livro.titulo}</strong> - ${livro.autor}
-  <br>Páginas:${livro.paginasLidas}/${livro.paginas}
-  <br>Progresso:${((livro.paginasLidas/livro.paginas)*100).toFixed(1)}%
+  <br>Páginas:${livro.lidas}/${livro.paginas}
+  <br>Progresso:${((livro.lidas/livro.paginas)*100).toFixed(1)}%
   <br>Status:${livro.status || "em andamento"}
   `
-  li.appendChild(info);
+  li.createElement(info);
 
   //mini barra de prograsso
   const barraContainer = document.createElement("div");
@@ -136,46 +102,46 @@ function adicionarLivroNaLista(Livro){
 
   const barraLivro = document.createElement("div");
   barraLivro.className = "barra-livro "+(livro.staus === "lido"?"lido":"andamento");
-  barraLivro.style.width = ((livro.paginasLidas/livro.paginas)*100)+"%";
+  barraLivro.style.width = ((livro.lidas/livro.paginas)*100)+"%";
 
-  barraContainer.appendChild(barraLivro);
-  li.appendChild(barraContainer);
+  barraContainer.createElement(barraLivro);
+  li.createElement(barraContainer);
 
   // Campo para atualizar páginas lidas
-  const inputLidas = documento.appendChild("input");
+  const inputLidas = documento.createElement("input");
   inputLidas.type = "number";
   inputLidas.min = 0;
   inputLidas.max = livro.paginas;
   inputLidas.value = livro.paginasLidas;
   inputLidas.onchange = ()=>atualizarProgressoLivro(livro, parseInt(inputLidas.value));
 
-  li.appendChild(inputLidas);
+  li.createElement(inputLidas);
 
   //Botão "Marcar como Lido"
   const btnLido = document.createElement("button");
   btnLido.textContent = "Marcar como Lido";
   btnLido.onclick = ()=> atualizarStatus(livro, "lido");
-  li.appendChild(btnLido);
+  li.createElement(btnLido);
 
   //Botão "Em andamento"
   const btnAndamento = document.createElement("button");
-  btnLido.textContent = "em andamento";
-  btnLido.onclick = ()=> atualizarStatus(livro, "em andamento");
-  li.appendChild(btnAndamento);
+  btnAndamento.textContent = "em andamento";
+  btnAndamento.onclick = ()=> atualizarStatus(livro, "em andamento");
+  li.createElement(btnAndamento);
   
   //Botão remover com confirmação
   const btnRemover = document.createElement("button");
-  btnLido.textContent = "Remover";
-  btnLido.onclick = ()=> removerLivro(livro);
-  li.appendChild(btnRemover);
+  btnRemover.textContent = "Remover";
+  btnRemover.onclick = ()=> removerLivro(livro);
+  li.createElement(btnRemover);
 
-  lista.appendChild(li);
+  lista.createElement(li);
 }
 
 function atualizarStatus(livro, novoStatus){
-  let livros = JSON.parse(localStorage.getItem("livros")) || []
+  let livros = buscarLivros();
   livros = livros.map(l=>{
-    if(l,titulo ===livros.titulo && l.autor === livro.autor){
+    if(l.titulo ===livros.titulo && l.autor === livro.autor){
       l.status = novoStatus;
     }
     return l;
@@ -185,4 +151,8 @@ function atualizarStatus(livro, novoStatus){
   lista.innerHTML = "";
   livros.forEach(adicionarLivroNaLista);
   atualizarProgressoGeral();
+}
+
+function buscarLivros(){
+  return JSON.parse(localStorage.getItem("livros")) || [];
 }
