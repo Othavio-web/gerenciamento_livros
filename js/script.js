@@ -26,7 +26,7 @@ function salvarLivro(livro) {
   livros.push(livro);
   try{
     localStorage.setItem("livros", JSON.stringify(livros));
-  }catch(erro){
+  }catch(error){
     console.error();
   }
   
