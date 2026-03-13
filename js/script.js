@@ -50,7 +50,7 @@ function adicionarLivroNaLista(Livro){
   inputLidas.type = "number";
   inputLidas.min = 0;
   inputLidas.max = livro.paginas;
-  inputLidas.value = livro.paginasLidas;
+  inputLidas.value = livro.lidas;
   inputLidas.onchange = ()=>atualizarProgressoLivro(livro, parseInt(inputLidas.value));
 
   li.createElement(inputLidas);
@@ -79,12 +79,7 @@ function adicionarLivroNaLista(Livro){
 function salvarLivro(livro) {
   let livros = JSON.parse(localStorage.getItem("livros")) || [];
   livros.push(livro);
-  try{
-    localStorage.setItem("livros", JSON.stringify(livros));
-  }catch(error){
-    console.error();
-  }
-  
+  localStorage.setItem("livros", JSON.stringify(livros));  
 }
 
 function carregarLivros() {
