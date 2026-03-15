@@ -52,6 +52,14 @@ li {
   border-radius: 5px;
 }
 
+.livro-item {
+  background: white;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
 #barra-container {
   width: 100%;
   background: #ddd;

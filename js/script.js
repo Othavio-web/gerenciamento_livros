@@ -23,6 +23,7 @@ form.addEventListener("submit", function(event) {
 
 function adicionarLivroNaLista(Livro){
   const li = document.createElement("li");
+  li.classList.add("livro-item");
 
   //texto principal
   const info = document.createElement("div");
