@@ -21,7 +21,7 @@ form.addEventListener("submit", function(event) {
   atualizarProgressoGeral();
 });
 
-function adicionarLivroNaLista(Livro){
+function adicionarLivroNaLista(livro){
   const li = document.createElement("li");
   li.classList.add("livro-item");
 
@@ -33,7 +33,7 @@ function adicionarLivroNaLista(Livro){
   <br>Progresso:${((livro.lidas/livro.paginas)*100).toFixed(1)}%
   <br>Status:${livro.status || "em andamento"}
   `
-  li.createElement(info);
+  li.appendChild(info);
 
   //mini barra de prograsso
   const barraContainer = document.createElement("div");
@@ -43,38 +43,38 @@ function adicionarLivroNaLista(Livro){
   barraLivro.className = "barra-livro "+(livro.staus === "lido"?"lido":"andamento");
   barraLivro.style.width = ((livro.lidas/livro.paginas)*100)+"%";
 
-  barraContainer.createElement(barraLivro);
-  li.createElement(barraContainer);
+  barraContainer.appendChild(barraLivro);
+  li.appendChild(barraContainer);
 
   // Campo para atualizar páginas lidas
-  const inputLidas = documento.createElement("input");
+  const inputLidas = document.createElement("input");
   inputLidas.type = "number";
   inputLidas.min = 0;
   inputLidas.max = livro.paginas;
   inputLidas.value = livro.lidas;
   inputLidas.onchange = ()=>atualizarProgressoLivro(livro, parseInt(inputLidas.value));
 
-  li.createElement(inputLidas);
+  li.appendChild(inputLidas);
 
   //Botão "Marcar como Lido"
   const btnLido = document.createElement("button");
   btnLido.textContent = "Marcar como Lido";
   btnLido.onclick = ()=> atualizarStatus(livro, "lido");
-  li.createElement(btnLido);
+  li.appendChild(btnLido);
 
   //Botão "Em andamento"
   const btnAndamento = document.createElement("button");
   btnAndamento.textContent = "em andamento";
   btnAndamento.onclick = ()=> atualizarStatus(livro, "em andamento");
-  li.createElement(btnAndamento);
+  li.appendChild(btnAndamento);
   
   //Botão remover com confirmação
   const btnRemover = document.createElement("button");
   btnRemover.textContent = "Remover";
   btnRemover.onclick = ()=> removerLivro(livro);
-  li.createElement(btnRemover);
+  li.appendChild(btnRemover);
 
-  lista.createElement(li);
+  lista.appendChild(li);
 }
 
 function salvarLivro(livro) {
@@ -91,35 +91,37 @@ function carregarLivros() {
 }
 
 function atualizarProgressoLivro(livro, novasPaginasLidas) {
-  try {
-    if (novasPaginasLidas < 0) {
-      throw new Error("número de paginas negativo, verifique");
-    }
-    if (novasPaginasLidas > livro.paginas) {
-      throw new Error("O número de páginas lidas não pode ser maior que o total de páginas!");
-    }
-    let livros = JSON.parse(localStorage.getItem("livros")) || [];
-    livros = livros.map(l => {
-      if (l.titulo === livro.titulo && l.autor === livro.autor) {
-        l.lidas = novasPaginasLidas;
-      }
-      return l;
-    });
-    localStorage.setItem("livros", JSON.stringify(livros));
-
-    lista.innerHTML = "";
-    livros.forEach(adicionarLivroNaLista);
-    atualizarProgressoGeral();
-  } catch (erro) { 
-    erro.mensagem 
+  if (novasPaginasLidas > livro.paginas) {
+    throw new Error("O número de páginas lidas não pode ser maior que o total de páginas!");
   }
+  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  livros = livros.map(l => {
+    if (l.titulo === livro.titulo && l.autor === livro.autor) {
+      l.lidas = novasPaginasLidas;
+    }
+    return l;
+  });
+  localStorage.setItem("livros", JSON.stringify(livros));
+
+  lista.innerHTML = "";
+  livros.forEach(adicionarLivroNaLista);
+  atualizarProgressoGeral();
 }
 
 function atualizarStatus(livro, novoStatus){
   let livros = JSON.parse(localStorage.getItem("livros")) || [];
   livros = livros.map(l=>{
-    if(l.titulo ===livros.titulo && l.autor === livro.autor){
+    if(l.titulo ===livro.titulo && l.autor === livro.autor && novoStatus==="lido"){
+      l.barraLivro.classList.remove("em andamento");
+      l.barraLivro.classList.remove("lido");
       l.status = novoStatus;
+      l.lidas = livro.paginas;
+    } else if(l.titulo ===livro.titulo && l.autor === livro.autor && novoStatus==="em andamento"){
+      l.barraLivro.classList.remove("lido");
+      l.barraLivro.classList.remove("em andamento");
+      l.barraLivro.className.replace("barra-livro lido", "barra-livro andamento");
+      l.status = novoStatus;
+      l.lidas = 0;
     }
     return l;
   });
@@ -144,7 +146,7 @@ function removerLivro(livro) {
 }
 
 function atualizarProgressoGeral() {
-  let livros = buscarLivros();
+  let livros = JSON.parse(localStorage.getItem("livros")) || [];
 
   let totalPaginas = livros.reduce((acc, l) => acc + l.paginas, 0);
   let paginasLidas = livros.reduce((acc, l) => acc + l.lidas, 0);
