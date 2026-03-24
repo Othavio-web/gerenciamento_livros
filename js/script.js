@@ -78,13 +78,13 @@ function adicionarLivroNaLista(livro){
 }
 
 function salvarLivro(livro) {
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscaLivros();
   livros.push(livro);
   localStorage.setItem("livros", JSON.stringify(livros));  
 }
 
 function carregarLivros() {
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscaLivros();
   lista.innerHTML = "";
   livros.forEach(adicionarLivroNaLista);
   atualizarProgressoGeral();
@@ -92,9 +92,10 @@ function carregarLivros() {
 
 function atualizarProgressoLivro(livro, novasPaginasLidas) {
   if (novasPaginasLidas > livro.paginas) {
+    alert("O número de páginas lidas não pode ser maior que o total de páginas!");
     throw new Error("O número de páginas lidas não pode ser maior que o total de páginas!");
   }
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscaLivros();
   livros = livros.map(l => {
     if (l.titulo === livro.titulo && l.autor === livro.autor) {
       l.lidas = novasPaginasLidas;
@@ -109,17 +110,12 @@ function atualizarProgressoLivro(livro, novasPaginasLidas) {
 }
 
 function atualizarStatus(livro, novoStatus){
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscaLivros();
   livros = livros.map(l=>{
     if(l.titulo ===livro.titulo && l.autor === livro.autor && novoStatus==="lido"){
-      l.barraLivro.classList.remove("em andamento");
-      l.barraLivro.classList.remove("lido");
       l.status = novoStatus;
       l.lidas = livro.paginas;
     } else if(l.titulo ===livro.titulo && l.autor === livro.autor && novoStatus==="em andamento"){
-      l.barraLivro.classList.remove("lido");
-      l.barraLivro.classList.remove("em andamento");
-      l.barraLivro.className.replace("barra-livro lido", "barra-livro andamento");
       l.status = novoStatus;
       l.lidas = 0;
     }
@@ -136,7 +132,7 @@ function removerLivro(livro) {
   const confirmar = confirm(`Tem certeza que deseja remover "${livro.titulo}" de ${livro.autor}?`);
   if (!confirmar) return;
 
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscaLivros();
   livros = livros.filter(l => !(l.titulo === livro.titulo && l.autor === livro.autor));
   localStorage.setItem("livros", JSON.stringify(livros));
 
@@ -146,7 +142,7 @@ function removerLivro(livro) {
 }
 
 function atualizarProgressoGeral() {
-  let livros = JSON.parse(localStorage.getItem("livros")) || [];
+  let livros = buscaLivros();
 
   let totalPaginas = livros.reduce((acc, l) => acc + l.paginas, 0);
   let paginasLidas = livros.reduce((acc, l) => acc + l.lidas, 0);
@@ -155,4 +151,8 @@ function atualizarProgressoGeral() {
 
   barra.style.width = porcentagem + "%";
   textoProgresso.textContent = `Progresso geral: ${paginasLidas} de ${totalPaginas} páginas (${porcentagem.toFixed(1)}%)`;
+}
+
+function buscaLivros(){
+  return JSON.parse(localStorage.getItem("livros")) || [];
 }
