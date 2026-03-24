@@ -28,8 +28,9 @@ input, button {
 button {
   background: #4a90e2;
   color: white;
-  border: none;
+  border: solid;
   cursor: pointer;
+  border-radius: 99px;
 }
 
 button:hover {
@@ -50,6 +51,14 @@ li {
   margin: 10px 0;
   padding: 10px;
   border-radius: 5px;
+}
+
+.livro-item {
+  background: white;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 #barra-container {
